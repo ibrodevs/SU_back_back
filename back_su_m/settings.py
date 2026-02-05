@@ -173,8 +173,8 @@ if AWS_ACCESS_KEY_ID:
     AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
     AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION", default="us-east-1")
     
-    # Пытаемся сделать максимально публичным
-    AWS_DEFAULT_ACL = 'public-read'  # Попытка установить публичный ACL
+    # Bucketeer не поддерживает ACL - используем прокси через Django
+    AWS_DEFAULT_ACL = None  # Без ACL
     AWS_QUERYSTRING_AUTH = False  # Отключаем signed URLs
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_SIGNATURE_VERSION = 's3v4'
@@ -192,8 +192,7 @@ if AWS_ACCESS_KEY_ID:
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "location": "media",
-                "querystring_auth": False,
-                "default_acl": "public-read",
+                "querystring_auth": False,  # Без подписей
             },
         },
         "staticfiles": {
@@ -202,11 +201,12 @@ if AWS_ACCESS_KEY_ID:
     }
 
     # Используем прокси URL через Django для публичного доступа
+    # Все файлы доступны через https://your-app.herokuapp.com/media/filename.jpg
     MEDIA_URL = '/media/'
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     
-    # Прямой S3 URL (будет работать только через Django proxy)
+    # Прямой S3 URL (не работает из-за Block Public Access)
     AWS_S3_DIRECT_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 else:
     # Локальное хранение для разработки
