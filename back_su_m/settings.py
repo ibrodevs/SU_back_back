@@ -175,7 +175,7 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
     AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
     AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION")
     AWS_QUERYSTRING_AUTH = True  # Используем подписанные URL
-    AWS_QUERYSTRING_EXPIRE = 31536000  # URL действителен 1 год (в секундах)
+    AWS_QUERYSTRING_EXPIRE = 604800  # Максимум 7 дней (в секундах)
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None  # Bucketeer блокирует публичные ACL
     AWS_S3_SIGNATURE_VERSION = 's3v4'  # Используем signature v4
@@ -189,7 +189,7 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
             "OPTIONS": {
                 "location": "media",
                 "querystring_auth": True,
-                "querystring_expire": 31536000,  # 1 год
+                "querystring_expire": 604800,  # 7 дней (максимум для AWS)
             },
         },
         "staticfiles": {  # статика через WhiteNoise
