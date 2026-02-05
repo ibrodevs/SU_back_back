@@ -189,6 +189,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.su-medical-school.com",
     "https://med-backend-d61c905599c2.herokuapp.com",
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # -------------------
