@@ -187,6 +187,7 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://www.su-medical-school.com",
+    "https://med-backend-d61c905599c2.herokuapp.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
