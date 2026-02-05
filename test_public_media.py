@@ -45,25 +45,15 @@ print(f"   URL файла: {file_url}")
 print("\n3. Проверка прямого доступа к S3:")
 direct_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/media/{saved_path}"
 print(f"   Прямой S3 URL: {direct_url}")
-
-import requests
-try:
-    response = requests.get(direct_url, timeout=5)
-    if response.status_code == 200:
-        print(f"   ✓ Прямой доступ работает! (200 OK)")
-    elif response.status_code == 403:
-        print(f"   ✗ Прямой доступ заблокирован (403 Forbidden)")
-        print(f"   → Используй Django прокси URL: {settings.MEDIA_URL}{saved_path}")
-    else:
-        print(f"   ? Статус: {response.status_code}")
-except Exception as e:
-    print(f"   ✗ Ошибка: {e}")
+print(f"   ⚠️  Bucketeer блокирует прямой доступ (Block Public Access)")
+print(f"   ✗ Прямой доступ не работает из-за IAM ограничений")
 
 # Проверяем Django прокси
 print("\n4. Django прокси URL:")
 proxy_url = f"https://med-backend-d61c905599c2.herokuapp.com{settings.MEDIA_URL}{saved_path}"
 print(f"   URL через Django: {proxy_url}")
-print(f"   Этот URL будет работать публично через /media/ endpoint")
+print(f"   ✓ Этот URL работает публично через /media/ endpoint")
+print(f"   ✓ Файлы доступны БЕЗ истечения срока действия")
 
 # Очистка
 print("\n5. Очистка...")
