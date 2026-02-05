@@ -163,17 +163,16 @@ MODELTRANSLATION_LANGUAGES = ('ru', 'ky', 'en')
 MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'ru'
 
 # -------------------
-# AWS S3 Storage (Bucketeer)
+# AWS S3 Storage
 # -------------------
-# Используем переменные от аддона Bucketeer
-BUCKETEER_AWS_ACCESS_KEY_ID = config("BUCKETEER_AWS_ACCESS_KEY_ID", default=None)
+# Поддержка как Bucketeer, так и собственного S3 бакета
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default=None) or config("BUCKETEER_AWS_ACCESS_KEY_ID", default=None)
 
-if BUCKETEER_AWS_ACCESS_KEY_ID:
-    # Bucketeer настройки
-    AWS_ACCESS_KEY_ID = BUCKETEER_AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY = config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
-    AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION")
+if AWS_ACCESS_KEY_ID:
+    # AWS настройки (работает с обоими: собственным бакетом и Bucketeer)
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", default=None) or config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default=None) or config("BUCKETEER_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default=None) or config("BUCKETEER_AWS_REGION", default="us-east-1")
     AWS_QUERYSTRING_AUTH = False  # Публичные файлы не требуют подписи
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
@@ -181,21 +180,21 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
     
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
-    # Медиа файлы в папке public/ (публичный доступ)
+    # Медиа файлы в S3 (публично доступны)
     STORAGES = {
-        "default": {  # медиа файлы в S3 в папке public/
+        "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
-                "location": "public/media",  # Используем префикс public/
-                "querystring_auth": False,  # Не требуем подписи для публичных файлов
+                "location": "media",
+                "querystring_auth": False,  # Публичный доступ без подписей
             },
         },
-        "staticfiles": {  # статика через WhiteNoise
+        "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
         },
     }
 
-    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/public/media/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 else:
