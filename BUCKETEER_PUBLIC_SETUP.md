@@ -140,7 +140,7 @@ git push heroku iliyar:main
 
 ## 📱 Использование в API
 
-В serializers Django автоматически добавляет правильные URL:
+В serializers Django автоматически добавляет правильные URL с доменом Heroku:
 
 ```python
 # Serializer
@@ -151,16 +151,48 @@ class BannerSerializer(serializers.ModelSerializer):
 
 # API Response
 {
-    "id": 1,
-    "image": "/media/banners/2018_73117000_1524465858053.jpg",
-    "title": "Main Banner"
+    "id": 9,
+    "photo": "https://med-backend-d61c905599c2.herokuapp.com/media/banners/2018_73117000_1524465858053.jpg"
 }
 ```
 
-Frontend должен добавить домен:
+Frontend просто использует URL напрямую:
 ```javascript
-const fullUrl = `https://med-backend-d61c905599c2.herokuapp.com${image}`
+// Ответ API уже содержит полный URL
+const imageUrl = response.photo;
 // https://med-backend-d61c905599c2.herokuapp.com/media/banners/2018_73117000_1524465858053.jpg
+
+// Использование в React/Vue
+<img src={imageUrl} alt="Banner" />
+```
+
+### Пример реального API ответа:
+```bash
+$ curl https://med-backend-d61c905599c2.herokuapp.com/api/banners/
+```
+```json
+{
+    "count": 3,
+    "results": [
+        {
+            "id": 9,
+            "photo": "https://med-backend-d61c905599c2.herokuapp.com/media/banners/2018_73117000_1524465858053.jpg"
+        },
+        {
+            "id": 8,
+            "photo": "https://med-backend-d61c905599c2.herokuapp.com/media/banners/907774e643e8d.png"
+        }
+    ]
+}
+```
+
+### Проверка доступности:
+```bash
+$ curl -I "https://med-backend-d61c905599c2.herokuapp.com/media/banners/2018_73117000_1524465858053.jpg"
+
+HTTP/1.1 200 OK ✅
+Content-Type: image/jpeg ✅
+Cache-Control: public, max-age=86400 ✅
 ```
 
 ## ✨ Готово!
