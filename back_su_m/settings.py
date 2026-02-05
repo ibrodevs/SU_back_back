@@ -163,30 +163,37 @@ MODELTRANSLATION_LANGUAGES = ('ru', 'ky', 'en')
 MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'ru'
 
 # -------------------
-# AWS S3 Storage
+# AWS S3 Storage (Bucketeer)
 # -------------------
-# Поддержка как Bucketeer, так и собственного S3 бакета
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default=None) or config("BUCKETEER_AWS_ACCESS_KEY_ID", default=None)
+AWS_ACCESS_KEY_ID = config("BUCKETEER_AWS_ACCESS_KEY_ID", default=None)
 
 if AWS_ACCESS_KEY_ID:
-    # AWS настройки (работает с обоими: собственным бакетом и Bucketeer)
-    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", default=None) or config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default=None) or config("BUCKETEER_BUCKET_NAME")
-    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default=None) or config("BUCKETEER_AWS_REGION", default="us-east-1")
-    AWS_QUERYSTRING_AUTH = False  # Публичные файлы не требуют подписи
+    # Bucketeer настройки
+    AWS_SECRET_ACCESS_KEY = config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION", default="us-east-1")
+    
+    # Пытаемся сделать максимально публичным
+    AWS_DEFAULT_ACL = 'public-read'  # Попытка установить публичный ACL
+    AWS_QUERYSTRING_AUTH = False  # Отключаем signed URLs
     AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None
     AWS_S3_SIGNATURE_VERSION = 's3v4'
+    
+    # Заголовки для кэширования
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',  # 1 день
+    }
     
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
-    # Медиа файлы в S3 (публично доступны)
+    # Медиа файлы в S3
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "location": "media",
-                "querystring_auth": False,  # Публичный доступ без подписей
+                "querystring_auth": False,
+                "default_acl": "public-read",
             },
         },
         "staticfiles": {
@@ -194,9 +201,13 @@ if AWS_ACCESS_KEY_ID:
         },
     }
 
-    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+    # Используем прокси URL через Django для публичного доступа
+    MEDIA_URL = '/media/'
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    
+    # Прямой S3 URL (будет работать только через Django proxy)
+    AWS_S3_DIRECT_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 else:
     # Локальное хранение для разработки
     STATIC_URL = '/static/'

@@ -1,8 +1,9 @@
 # back_su_m/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from .media_proxy import serve_media
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,7 +23,13 @@ urlpatterns = [
     path('', include('social_opportunities.urls')),  # Social Opportunities API endpoints
 ]
 
-# Serve media files during development
-if settings.DEBUG:
+# Serve media files через прокси для S3 или локально для DEBUG
+if hasattr(settings, 'AWS_ACCESS_KEY_ID') and settings.AWS_ACCESS_KEY_ID:
+    # Проксируем медиа файлы из S3
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve_media, name='media-proxy'),
+    ]
+elif settings.DEBUG:
+    # Локальная разработка
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
