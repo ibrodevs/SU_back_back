@@ -184,7 +184,9 @@ if AWS_ACCESS_KEY_ID:
         'CacheControl': 'max-age=86400',  # 1 день
     }
     
-    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+    # Используем домен Heroku для публичного доступа через прокси
+    AWS_S3_CUSTOM_DOMAIN = 'med-backend-d61c905599c2.herokuapp.com'
+    AWS_S3_URL_PROTOCOL = 'https:'
 
     # Медиа файлы в S3
     STORAGES = {
