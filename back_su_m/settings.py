@@ -163,16 +163,21 @@ MODELTRANSLATION_LANGUAGES = ('ru', 'ky', 'en')
 MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'ru'
 
 # -------------------
-# AWS S3 Storage
+# AWS S3 Storage (Bucketeer)
 # -------------------
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default=None)
+# Используем переменные от аддона Bucketeer
+BUCKETEER_AWS_ACCESS_KEY_ID = config("BUCKETEER_AWS_ACCESS_KEY_ID", default=None)
 
-if AWS_ACCESS_KEY_ID:
-    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+if BUCKETEER_AWS_ACCESS_KEY_ID:
+    # Bucketeer настройки
+    AWS_ACCESS_KEY_ID = BUCKETEER_AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION")
     AWS_QUERYSTRING_AUTH = False  # файлы будут открываться без подписей
-
+    AWS_S3_FILE_OVERWRITE = False  # не перезаписывать файлы с одинаковыми именами
+    AWS_DEFAULT_ACL = None  # использовать ACL по умолчанию для бакета
+    
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
     STORAGES = {
@@ -193,6 +198,7 @@ if AWS_ACCESS_KEY_ID:
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 else:
+    # Локальное хранение для разработки
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
