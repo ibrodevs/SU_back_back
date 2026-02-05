@@ -176,7 +176,10 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
     AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION")
     AWS_QUERYSTRING_AUTH = False  # файлы будут открываться без подписей
     AWS_S3_FILE_OVERWRITE = False  # не перезаписывать файлы с одинаковыми именами
-    AWS_DEFAULT_ACL = None  # использовать ACL по умолчанию для бакета
+    AWS_DEFAULT_ACL = 'public-read'  # публичный доступ к статическим файлам
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',  # кэширование на 1 день
+    }
     
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
@@ -185,12 +188,14 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
                 "location": "media",
+                "default_acl": "public-read",
             },
         },
         "staticfiles": {  # статика
             "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
             "OPTIONS": {
                 "location": "static",
+                "default_acl": "public-read",
             },
         },
     }
