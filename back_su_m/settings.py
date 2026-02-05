@@ -18,6 +18,42 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='*').split(',')]
 
 # -------------------
+# Logging
+# -------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
+# -------------------
 # Installed apps
 # -------------------
 INSTALLED_APPS = [
@@ -160,8 +196,10 @@ else:
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # -------------------
 # Django REST Framework
@@ -205,3 +243,9 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@salymbekov.e
 
 ADMISSIONS_EMAIL_TO = config('ADMISSIONS_EMAIL_TO', default='adilhansatymkulov40@gmail.com')
 STUDENT_APPEALS_EMAIL_TO = config('STUDENT_APPEALS_EMAIL_TO', default='adilhansatymkulov40@gmail.com')
+
+# -------------------
+# Default primary key field type
+# -------------------
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
