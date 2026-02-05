@@ -174,22 +174,20 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
     AWS_SECRET_ACCESS_KEY = config("BUCKETEER_AWS_SECRET_ACCESS_KEY")
     AWS_STORAGE_BUCKET_NAME = config("BUCKETEER_BUCKET_NAME")
     AWS_S3_REGION_NAME = config("BUCKETEER_AWS_REGION")
-    AWS_QUERYSTRING_AUTH = True  # Используем подписанные URL
-    AWS_QUERYSTRING_EXPIRE = 604800  # Максимум 7 дней (в секундах)
+    AWS_QUERYSTRING_AUTH = False  # Публичные файлы не требуют подписи
     AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = None  # Bucketeer блокирует публичные ACL
-    AWS_S3_SIGNATURE_VERSION = 's3v4'  # Используем signature v4
+    AWS_DEFAULT_ACL = None
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
     
-    AWS_S3_CUSTOM_DOMAIN = None  # Не используем custom domain с подписанными URL
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
 
-    # Только медиа в S3 с подписанными URL, статику обслуживает WhiteNoise
+    # Медиа файлы в папке public/ (публичный доступ)
     STORAGES = {
-        "default": {  # медиа файлы в S3 с подписанными URL
+        "default": {  # медиа файлы в S3 в папке public/
             "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
             "OPTIONS": {
-                "location": "media",
-                "querystring_auth": True,
-                "querystring_expire": 604800,  # 7 дней (максимум для AWS)
+                "location": "public/media",  # Используем префикс public/
+                "querystring_auth": False,  # Не требуем подписи для публичных файлов
             },
         },
         "staticfiles": {  # статика через WhiteNoise
@@ -197,7 +195,7 @@ if BUCKETEER_AWS_ACCESS_KEY_ID:
         },
     }
 
-    MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/media/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/public/media/"
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 else:
