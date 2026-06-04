@@ -7,10 +7,11 @@ from django.http import Http404
 from .models import (
     Faculty, Accreditation, Leadership,
     QualityPrinciple, QualityDocument, QualityProcessGroup,
-    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings
+    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings,
+    HSMInfo
 )
 from .serializers import (
-    FacultySerializer, 
+    FacultySerializer,
     FacultyListSerializer,
     AccreditationSerializer,
     LeadershipSerializer,
@@ -21,8 +22,18 @@ from .serializers import (
     QualityStatisticSerializer,
     QualityAdvantageSerializer,
     QualitySettingsSerializer,
-    QualityManagementSystemSerializer
+    QualityManagementSystemSerializer,
+    HSMInfoSerializer
 )
+
+
+class HSMInfoView(APIView):
+    """Общая информация о Высшей школе медицины."""
+    def get(self, request):
+        info = HSMInfo.objects.filter(is_active=True).first()
+        if not info:
+            return Response({}, status=status.HTTP_200_OK)
+        return Response(HSMInfoSerializer(info).data)
 
 
 class QualityManagementSystemView(APIView):

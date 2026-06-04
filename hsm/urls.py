@@ -11,7 +11,8 @@ from .views import (
     QualityProcessViewSet,
     QualityStatisticViewSet,
     QualityAdvantageViewSet,
-    QualitySettingsView
+    QualitySettingsView,
+    HSMInfoView
 )
 
 router = DefaultRouter()
@@ -33,4 +34,6 @@ urlpatterns = [
     path('hsm/quality/system/', QualityManagementSystemView.as_view(), name='hsm-quality-system'),
     # Настройки системы качества
     path('hsm/quality/settings/', QualitySettingsView.as_view(), name='hsm-quality-settings'),
+    # Общая информация о ВШМ
+    path('hsm/info/', HSMInfoView.as_view(), name='hsm-info'),
 ]

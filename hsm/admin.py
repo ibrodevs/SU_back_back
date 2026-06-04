@@ -2,8 +2,11 @@ from django.contrib import admin
 from .models import (
     Faculty, Accreditation, Leadership,
     QualityPrinciple, QualityDocument, QualityProcessGroup,
-    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings
+    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings,
+    HSMInfo
 )
+
+admin.site.register(HSMInfo)
 
 
 @admin.register(QualityPrinciple)

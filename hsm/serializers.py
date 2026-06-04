@@ -1,9 +1,21 @@
 from rest_framework import serializers
 from .models import (
     Faculty, Accreditation, Leadership,
-    QualityPrinciple, QualityDocument, QualityProcessGroup, 
-    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings
+    QualityPrinciple, QualityDocument, QualityProcessGroup,
+    QualityProcess, QualityStatistic, QualityAdvantage, QualitySettings,
+    HSMInfo
 )
+
+
+class HSMInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HSMInfo
+        fields = [
+            'id', 'title', 'title_en', 'title_kg',
+            'description', 'description_en', 'description_kg',
+            'history', 'history_en', 'history_kg',
+            'main_directions', 'main_directions_en', 'main_directions_kg',
+        ]
 
 
 class QualityPrincipleSerializer(serializers.ModelSerializer):

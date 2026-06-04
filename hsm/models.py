@@ -449,3 +449,32 @@ class Accreditation(models.Model):
         return True
 
 
+
+
+class HSMInfo(models.Model):
+    """Общая информация о Высшей школе медицины (для страницы /hsm/about)."""
+    title = models.CharField(max_length=255, default='Высшая медицинская школа')
+    title_en = models.CharField(max_length=255, blank=True)
+    title_kg = models.CharField(max_length=255, blank=True)
+
+    description = models.TextField(blank=True)
+    description_en = models.TextField(blank=True)
+    description_kg = models.TextField(blank=True)
+
+    history = models.TextField(blank=True)
+    history_en = models.TextField(blank=True)
+    history_kg = models.TextField(blank=True)
+
+    main_directions = models.TextField(blank=True)
+    main_directions_en = models.TextField(blank=True)
+    main_directions_kg = models.TextField(blank=True)
+
+    is_active = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Информация ВШМ'
+        verbose_name_plural = 'Информация ВШМ'
+
+    def __str__(self):
+        return self.title

@@ -177,3 +177,33 @@ Email: {g('email')}
         return JsonResponse({'status': 'ok', 'ticket': ticket})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import OfficialContent
+from .serializers import OfficialContentSerializer
+
+@api_view(['GET'])
+def official_content_list(request):
+    """
+    Returns all official site content keys/values, structured by key.
+    E.g. { 'footer': { 'ru': {...}, 'en': {...} }, ... }
+    """
+    try:
+        contents = OfficialContent.objects.all()
+        # Build structured dict
+        structured_data = {}
+        for content in contents:
+            structured_data[content.key] = content.content
+            
+        return Response({
+            'success': True,
+            'data': structured_data
+        })
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
