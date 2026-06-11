@@ -796,6 +796,7 @@ class VideoContent(models.Model):
     # URL превью (для внешних ссылок)
     thumbnail_url = models.URLField(
         verbose_name=_('URL превью'),
+        max_length=500,
         blank=True,
         null=True,
         help_text='Ссылка на внешнее превью (альтернатива загрузке файла)'
