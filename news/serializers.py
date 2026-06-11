@@ -126,22 +126,24 @@ class NewsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
         fields = [
-            'id', 'title_ru', 'title_kg', 'title_en', 'slug', 
+            'id', 'title_ru', 'title_kg', 'title_en', 'slug',
             'summary_ru', 'summary_kg', 'summary_en', 'image_url',
-            'category', 'author_ru', 'author_kg', 'author_en', 
-            'published_at', 'is_featured', 'is_pinned', 'views_count', 
-            'tags', 'read_time'
+            'category', 'author_ru', 'author_kg', 'author_en',
+            'published_at', 'is_featured', 'is_pinned', 'views_count',
+            'tags', 'read_time', 'source_url'
         ]
-    
+
     def get_image_url(self, obj):
-        """Возвращает только реальные изображения, загруженные через админку"""
+        """Возвращает загруженное изображение либо внешнее (для импортированных новостей)"""
         if obj.image:
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
             return obj.image.url
+        if getattr(obj, 'external_image_url', None):
+            return obj.external_image_url
         return None
-    
+
     def get_tags(self, obj):
         # Получаем связанные теги через промежуточную модель
         tag_relations = NewsTagRelation.objects.filter(news=obj).select_related('tag')
@@ -176,18 +178,20 @@ class NewsDetailSerializer(serializers.ModelSerializer):
             'category', 'author_ru', 'author_kg', 'author_en', 
             'created_at', 'updated_at', 'published_at',
             'is_featured', 'is_pinned', 'views_count', 'tags', 'read_time',
-            'event_details', 'announcement_details', 'related_news'
+            'event_details', 'announcement_details', 'related_news', 'source_url'
         ]
-    
+
     def get_image_url(self, obj):
-        """Возвращает только реальные изображения, загруженные через админку"""
+        """Возвращает загруженное изображение либо внешнее (для импортированных новостей)"""
         if obj.image:
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.image.url)
             return obj.image.url
+        if getattr(obj, 'external_image_url', None):
+            return obj.external_image_url
         return None
-    
+
     def get_tags(self, obj):
         # Получаем связанные теги
         tag_relations = NewsTagRelation.objects.filter(news=obj).select_related('tag')

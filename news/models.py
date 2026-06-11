@@ -72,7 +72,11 @@ class News(models.Model):
     
     # Счетчики
     views_count = models.PositiveIntegerField(default=0, verbose_name='Количество просмотров')
-    
+
+    # Источник (для новостей, импортированных с официального сайта)
+    source_url = models.URLField(max_length=500, blank=True, null=True, verbose_name='Ссылка на оригинал')
+    external_image_url = models.URLField(max_length=500, blank=True, null=True, verbose_name='Внешнее изображение')
+
     class Meta:
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
